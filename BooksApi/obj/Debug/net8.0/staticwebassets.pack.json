@@ -1,0 +1,41 @@
+{
+  "Files": [
+    {
+      "Id": "D:\\proj\\BooksApi\\BooksApi\\wwwroot\\Images\\0e88ee91-e017-489c-b88f-5029bd5dfaed.jpg",
+      "PackagePath": "staticwebassets\\Images\\0e88ee91-e017-489c-b88f-5029bd5dfaed.jpg"
+    },
+    {
+      "Id": "D:\\proj\\BooksApi\\BooksApi\\wwwroot\\Images\\2cf019c1-a708-44a2-b8cc-a812b920074a.jpg",
+      "PackagePath": "staticwebassets\\Images\\2cf019c1-a708-44a2-b8cc-a812b920074a.jpg"
+    },
+    {
+      "Id": "D:\\proj\\BooksApi\\BooksApi\\wwwroot\\Images\\37afa32c-cd0e-499f-9be6-80d0e8873760.jpg",
+      "PackagePath": "staticwebassets\\Images\\37afa32c-cd0e-499f-9be6-80d0e8873760.jpg"
+    },
+    {
+      "Id": "D:\\proj\\BooksApi\\BooksApi\\wwwroot\\Images\\5e6853c9-2e43-48ef-9747-572ae93ace6a.jpg",
+      "PackagePath": "staticwebassets\\Images\\5e6853c9-2e43-48ef-9747-572ae93ace6a.jpg"
+    },
+    {
+      "Id": "D:\\proj\\BooksApi\\BooksApi\\wwwroot\\Images\\Default.jpg",
+      "PackagePath": "staticwebassets\\Images\\Default.jpg"
+    },
+    {
+      "Id": "obj\\Debug\\net8.0\\staticwebassets\\msbuild.BooksApi.Microsoft.AspNetCore.StaticWebAssets.props",
+      "PackagePath": "build\\Microsoft.AspNetCore.StaticWebAssets.props"
+    },
+    {
+      "Id": "obj\\Debug\\net8.0\\staticwebassets\\msbuild.build.BooksApi.props",
+      "PackagePath": "build\\BooksApi.props"
+    },
+    {
+      "Id": "obj\\Debug\\net8.0\\staticwebassets\\msbuild.buildMultiTargeting.BooksApi.props",
+      "PackagePath": "buildMultiTargeting\\BooksApi.props"
+    },
+    {
+      "Id": "obj\\Debug\\net8.0\\staticwebassets\\msbuild.buildTransitive.BooksApi.props",
+      "PackagePath": "buildTransitive\\BooksApi.props"
+    }
+  ],
+  "ElementsToRemove": []
+}
