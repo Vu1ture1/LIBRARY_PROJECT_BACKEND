@@ -154,3 +154,9 @@ D:\proj\BooksApi\BookApiUnitTestCase\obj\Debug\net8.0\BookApiUnitTestCase.genrun
 D:\proj\BooksApi\BookApiUnitTestCase\obj\Debug\net8.0\ref\BookApiUnitTestCase.dll
 D:\proj\BooksApi\BookApiUnitTestCase\bin\Debug\net8.0\Castle.Core.dll
 D:\proj\BooksApi\BookApiUnitTestCase\bin\Debug\net8.0\Moq.dll
+D:\proj\BooksApi\BookApiUnitTestCase\bin\Debug\net8.0\BooksApi.Application.dll
+D:\proj\BooksApi\BookApiUnitTestCase\bin\Debug\net8.0\BooksApi.Domain.dll
+D:\proj\BooksApi\BookApiUnitTestCase\bin\Debug\net8.0\BooksApi.Infrastructure.dll
+D:\proj\BooksApi\BookApiUnitTestCase\bin\Debug\net8.0\BooksApi.Application.pdb
+D:\proj\BooksApi\BookApiUnitTestCase\bin\Debug\net8.0\BooksApi.Domain.pdb
+D:\proj\BooksApi\BookApiUnitTestCase\bin\Debug\net8.0\BooksApi.Infrastructure.pdb

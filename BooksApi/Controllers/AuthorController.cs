@@ -1,15 +1,16 @@
 ﻿using AutoMapper;
-using BooksApi.CustomExceptions;
-using BooksApi.Entities;
-using BooksApi.FileService;
-using BooksApi.Helpers;
-using BooksApi.Pagination;
-using BooksApi.PostEntities;
-using BooksApi.Repositories;
+using BooksApi.Domain.Exceptions.AuthorExceptions;
+using BooksApi.Domain.Entities;
+using BooksApi.Application.Services;
+using BooksApi.Domain.Common;
+using BooksApi.Application.DTOs;
+using BooksApi.Domain.Repositories;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Cryptography.KeyDerivation;
+using BooksApi.Domain.Responses;
+using BooksApi.Application.Interfaces;
 
 namespace BooksApi.Controllers
 {
@@ -17,73 +18,42 @@ namespace BooksApi.Controllers
     [Route("api/authors")]
     public class AuthorController : Controller
     {
-        private readonly IAuthorRepository ar;
-
-        private readonly IMapper mapper;
-        public AuthorController(IAuthorRepository ar, IMapper mapper)
+        private IAuthorService _as;
+        public AuthorController(IAuthorService _as)
         {
-            this.ar = ar;
-            this.mapper = mapper;
+            this._as = _as;
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<TokenService.Response>> GetOneAuthorById(int id)
+        public async Task<ActionResult<Author>> GetOneAuthorById(int id, CancellationToken cancellationToken)
         {
-            var author = await ar.GetAuthorById(id);
-
-            if (author == null)
-            {
-                throw new AuthorNotFoundException();
-            }
+            var author = await _as.GetOneAuthorById(id, cancellationToken);
 
             return Ok(author);
         }
 
         [HttpGet("all")]
-        public async Task<ActionResult<List<Author>>> GetAllAuthorsWithPagination()
+        public async Task<ActionResult<List<Author>>> GetAllAuthors(CancellationToken cancellationToken)
         {
-            var authors = await ar.GetAllAuthors();
+            var authors = await _as.GetAllAuthors(cancellationToken);
 
             return Ok(authors);
         }
 
         [HttpPost("add")]
-        [Authorize(Roles = "Admin")]
-        public async Task<IActionResult> AddAuthor([FromBody] AuthorData auth_data)
+        [Authorize(Policy = "AdminOnly")]
+        public async Task<IActionResult> AddAuthor([FromBody] AuthorData authorDTO, CancellationToken cancellationToken)
         {
-            var auth = mapper.Map<Author>(auth_data);
-            
-            //Author auth = new Author();
-            //auth.Name = auth_data.Name;
-            //auth.Surname = auth_data.Surname;
-            //auth.Counry = auth_data.Counry;
-            //auth.BornDate = auth_data.BornDate;
+            await _as.AddAuthor(authorDTO, cancellationToken);
 
-            await ar.AddAuthor(auth);
-
-            return NoContent();
+            return Ok();
         }
 
         [HttpPut("change/{id}")]
-        [Authorize(Roles = "Admin")]
-        public async Task<IActionResult> ChangeBook(int id, [FromBody] AuthorData auth_data)
+        [Authorize(Policy = "AdminOnly")]
+        public async Task<IActionResult> ChangeBook(int id, [FromBody] AuthorData authorDTO, CancellationToken cancellationToken)
         {
-            var existingAuthor = await ar.GetAuthorById(id);
-
-            if (existingAuthor == null)
-            {
-                //return StatusCode(StatusCodes.Status404NotFound, $"Author with id: {id} does not found");
-                throw new AuthorNotFoundException(id);
-            }
-
-            mapper.Map(auth_data, existingAuthor);
-
-            //existingAuthor.Name = auth_data.Name;
-            //existingAuthor.Surname = auth_data.Surname;
-            //existingAuthor.Counry = auth_data.Counry;
-            //existingAuthor.BornDate = auth_data.BornDate;
-
-            await ar.ChangeAuthor(id, existingAuthor);
+            await _as.ChangeAuthor(id, authorDTO, cancellationToken);
 
             return Ok();
         }

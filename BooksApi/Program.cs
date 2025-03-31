@@ -1,11 +1,11 @@
-using BooksApi.DbService;
+using BooksApi.Infrastructure.DbService;
 using BooksApi.ExceptionMiddleware;
-using BooksApi.FileService;
-using BooksApi.Helpers;
-using BooksApi.Mapper;
-using BooksApi.PostEntities.EntitiesValidators;
-using BooksApi.Repositories;
-using BooksApi.SqliteRepositoryServices;
+using BooksApi.Infrastructure.Services;
+using BooksApi.Application.Services;
+using BooksApi.Application.Mapper;
+using BooksApi.Application.Validators;
+using BooksApi.Domain.Repositories;
+using BooksApi.Infrastructure.SqliteRepositoryServices;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.FileProviders;
@@ -13,6 +13,7 @@ using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using FluentValidation;
 using FluentValidation.AspNetCore;
+using BooksApi.Application.Interfaces;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -42,13 +43,12 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowSpecificOrigin", builder =>
     {
-        builder.WithOrigins("http://localhost:3000")  // Разрешить только с этого домена
-               .AllowAnyMethod()  // Разрешить любые HTTP-методы
-               .AllowAnyHeader()  // Разрешить любые заголовки
-               .AllowCredentials();  // Разрешить использование учетных данных
+        builder.WithOrigins("http://localhost:3000")
+               .AllowAnyMethod()
+               .AllowAnyHeader()
+               .AllowCredentials();
     });
 });
-
 
 builder.Services.AddScoped<IRefreshTokenRepository, RefreshTokenRepositorySqlite>();
 
@@ -60,6 +60,11 @@ builder.Services.AddScoped<IAuthorRepository, AuthorRepositorySqlite>();
 
 builder.Services.AddTransient<IFileService, FileService>();
 
+builder.Services.AddTransient<IUserService, UserService>();
+
+builder.Services.AddTransient<IBookService, BookService>();
+
+builder.Services.AddTransient<IAuthorService, AuthorService>();
 
 builder.Services.AddDbContext<AppDbContext>(options =>
 {
@@ -87,9 +92,13 @@ builder.Services.AddAuthentication(cfg => {
     };
 });
 
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("AdminOnly", policy =>
+        policy.RequireRole("Admin"));
+});
+
 var app = builder.Build();
-
-
 
 app.UseCors("AllowSpecificOrigin");
 
@@ -101,9 +110,6 @@ app.UseStaticFiles(new StaticFileOptions
            Path.Combine(builder.Environment.WebRootPath, "Images")),
     RequestPath = "/Resources"
 });
-
-
-//app.UseCors("AllowAll");
 
 if (app.Environment.IsDevelopment())
 {
@@ -118,7 +124,5 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
-
-
 
 app.Run();

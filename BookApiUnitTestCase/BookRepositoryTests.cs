@@ -1,7 +1,6 @@
-﻿using BooksApi.DbService;
-using BooksApi.Entities;
-using BooksApi.Repositories;
-using BooksApi.SqliteRepositoryServices;
+﻿using BooksApi.Infrastructure.DbService;
+using BooksApi.Domain.Entities;
+using BooksApi.Domain.Repositories;
 using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
@@ -9,8 +8,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Moq;
-using BooksApi.Pagination;
-using static System.Reflection.Metadata.BlobBuilder;
+using BooksApi.Domain.Common;
+using BooksApi.Infrastructure.SqliteRepositoryServices;
 using Xunit;
 
 namespace BookApiUnitTestCase
@@ -25,7 +24,6 @@ namespace BookApiUnitTestCase
         private Author author = null;
 
         private List<Book> allBooks = null;
-
         public BookRepositoryTests()
         {
             context = TestDbContextInMem.Create();
@@ -107,6 +105,10 @@ namespace BookApiUnitTestCase
         [Fact, TestPriority(1)]
         public async Task AddBook_Should_Add_Book()
         {
+            CancellationTokenSource cancelTokenSource = new CancellationTokenSource();
+
+            CancellationToken token = cancelTokenSource.Token;
+
             // Arrange
             var book = new Book
             {
@@ -123,10 +125,10 @@ namespace BookApiUnitTestCase
             };
 
             // Act
-            await bookRepository.AddBook(book);
+            await bookRepository.AddBook(book, token);
 
             // Assert
-            var addedBook = await bookRepository.GetBookByISBN("978-5-17-052038-2");
+            var addedBook = await bookRepository.GetBookByISBN("978-5-17-052038-2", token);
 
             Assert.NotNull(addedBook);
             Assert.Equal(book.ISBN, addedBook.ISBN);
@@ -143,8 +145,12 @@ namespace BookApiUnitTestCase
         [Fact, TestPriority(2)]
         public async Task GetBooks()
         {
+            CancellationTokenSource cancelTokenSource = new CancellationTokenSource();
+
+            CancellationToken token = cancelTokenSource.Token;
+
             // Act
-            var result = await bookRepository.GetBooks(1, 10, null, null);
+            var result = await bookRepository.GetBooks(1, 10, null, null, token);
 
             // Assert
             Assert.IsType<PaginatedList<Book>>(result);

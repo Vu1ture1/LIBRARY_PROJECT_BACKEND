@@ -1,12 +1,12 @@
 ﻿using AutoMapper;
 using BooksApi.Controllers;
-using BooksApi.CustomExceptions;
-using BooksApi.DbService;
-using BooksApi.Entities;
-using BooksApi.FileService;
-using BooksApi.PostEntities;
-using BooksApi.Repositories;
-using BooksApi.SqliteRepositoryServices;
+using BooksApi.Domain.Exceptions.BookExceptions;
+using BooksApi.Infrastructure.DbService;
+using BooksApi.Domain.Entities;
+using BooksApi.Application.Interfaces;
+using BooksApi.Application.DTOs;
+using BooksApi.Domain.Repositories;
+using BooksApi.Infrastructure.SqliteRepositoryServices;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
@@ -19,6 +19,7 @@ using System.Linq;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
+using BooksApi.Application.Services;
 
 namespace BookApiUnitTestCase
 {
@@ -32,7 +33,11 @@ namespace BookApiUnitTestCase
 
         private readonly Mock<IMapper> mock_mapper;
 
+        private readonly IBookService service;
+
         private readonly BookController bookController;
+
+       
 
         private Author author = null;
 
@@ -117,7 +122,9 @@ namespace BookApiUnitTestCase
 
             mock_mapper = new Mock<IMapper>();
 
-            bookController = new BookController(bookRepository, mock_fs.Object, mock_mapper.Object);
+            service = new BookService(bookRepository, mock_fs.Object, mock_mapper.Object);
+
+            bookController = new BookController(service);
 
             var token = GenerateJwtTokenForTest("Admin", "1");
 
@@ -134,6 +141,10 @@ namespace BookApiUnitTestCase
         [Fact]
         public async Task AddBook_Test() 
         {
+            CancellationTokenSource cancelTokenSource = new CancellationTokenSource();
+            
+            CancellationToken token = cancelTokenSource.Token;
+
             var bookData = new BookData
             {
                 ISBN = "978-5-17-057139-2",
@@ -143,7 +154,7 @@ namespace BookApiUnitTestCase
                 AuthorId = author.Id
             };
 
-            mock_fs.Setup(fs => fs.SaveFileAsync(It.IsAny<IFormFile>(), It.IsAny<string[]>()))
+            mock_fs.Setup(fs => fs.SaveFileAsync(It.IsAny<IFormFile>(), It.IsAny<string[]>(), token))
                 .ReturnsAsync("savedImage.jpg");
 
             mock_mapper.Setup(mapper => mapper.Map<Book>(It.IsAny<BookData>()))
@@ -156,38 +167,46 @@ namespace BookApiUnitTestCase
                    AuthorId = bookData.AuthorId
                 });
 
-            var result = await bookController.AddBook(bookData);
+            var result = await bookController.AddBook(bookData, token);
 
-            var actionResult = Assert.IsType<NoContentResult>(result);
-            Assert.Equal(StatusCodes.Status204NoContent, actionResult.StatusCode);
+            var actionResult = Assert.IsType<OkResult>(result);
+            Assert.Equal(StatusCodes.Status200OK, actionResult.StatusCode);
         }
 
         [Fact]
         public async Task GetBookById_Test()
         {
+            CancellationTokenSource cancelTokenSource = new CancellationTokenSource();
+
+            CancellationToken token = cancelTokenSource.Token;
+
             int id = 1;
 
-            var result = await bookController.GetOneBookById(id);
+            var result = await bookController.GetOneBookById(id, token);
             
             // Assert
-            var actionResult = Assert.IsType<OkObjectResult>(result.Result); // OkObjectResult - это правильный тип для Ok()
+            var actionResult = Assert.IsType<OkObjectResult>(result.Result);
             Assert.Equal(StatusCodes.Status200OK, actionResult.StatusCode);
 
             var returnedBook = actionResult.Value as Book;
 
-            Assert.NotNull(returnedBook); // Проверяем, что книга не пустая
+            Assert.NotNull(returnedBook);
 
-            Assert.Contains(returnedBook, allBooks); // Ошибка здесь: result.Value не List<Book>
+            Assert.Contains(returnedBook, allBooks);
         }
 
         [Fact]
         public async Task GetBookById_Exception_Test()
         {
+            CancellationTokenSource cancelTokenSource = new CancellationTokenSource();
+
+            CancellationToken token = cancelTokenSource.Token;
+
             int id = 999;
 
             var exception = await Assert.ThrowsAsync<BookNotFoundException>(async () =>
             {
-                await bookController.GetOneBookById(id);
+                await bookController.GetOneBookById(id, token);
             });
 
             // Assert

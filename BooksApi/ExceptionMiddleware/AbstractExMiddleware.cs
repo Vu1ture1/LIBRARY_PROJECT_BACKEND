@@ -1,4 +1,5 @@
-﻿using System.Net;
+﻿using Newtonsoft.Json;
+using System.Net;
 
 namespace BooksApi.ExceptionMiddleware
 {
@@ -24,7 +25,6 @@ namespace BooksApi.ExceptionMiddleware
                 var response = context.Response;
                 response.ContentType = "application/json";
 
-                // get the response code and message
                 var (status, message) = GetResponse(exception);
                 response.StatusCode = (int)status;
                 await response.WriteAsync(message);
