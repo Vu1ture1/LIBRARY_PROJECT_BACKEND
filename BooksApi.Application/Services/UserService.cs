@@ -21,10 +21,10 @@ namespace BooksApi.Application.Services
         private IUserRepository ur;
 
         private IRefreshTokenRepository rtr;
+        private ITokenService ts;
 
         private readonly IMapper mapper;
-        private TokenService ts { get; }
-        public UserService(IUserRepository ur, IRefreshTokenRepository rtr, IMapper mapper, TokenService ts)
+        public UserService(IUserRepository ur, IRefreshTokenRepository rtr, IMapper mapper, ITokenService ts)
         {
             this.ur = ur;
             this.rtr = rtr;

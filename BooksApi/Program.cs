@@ -37,8 +37,6 @@ var config = builder.Configuration;
 
 builder.Services.AddSingleton<IConfiguration>(config);
 
-builder.Services.AddScoped<TokenService>();
-
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowSpecificOrigin", builder =>
@@ -57,6 +55,8 @@ builder.Services.AddScoped<IUserRepository, UserRepositorySqlite>();
 builder.Services.AddScoped<IBookRepository, BookRepositorySqlite>();
 
 builder.Services.AddScoped<IAuthorRepository, AuthorRepositorySqlite>();
+
+builder.Services.AddTransient<ITokenService, TokenService>();
 
 builder.Services.AddTransient<IFileService, FileService>();
 
