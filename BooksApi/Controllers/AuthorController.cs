@@ -51,9 +51,18 @@ namespace BooksApi.Controllers
 
         [HttpPut("change/{id}")]
         [Authorize(Policy = "AdminOnly")]
-        public async Task<IActionResult> ChangeBook(int id, [FromBody] AuthorData authorDTO, CancellationToken cancellationToken)
+        public async Task<IActionResult> ChangeAuthor(int id, [FromBody] AuthorData authorDTO, CancellationToken cancellationToken)
         {
             await _as.ChangeAuthor(id, authorDTO, cancellationToken);
+
+            return Ok();
+        }
+
+        [HttpDelete("delete/{id}")]
+        [Authorize(Policy = "AdminOnly")]
+        public async Task<IActionResult> DeleteAuthor(int id, CancellationToken cancellationToken)
+        {
+            await _as.DeleteAuthor(id, cancellationToken);
 
             return Ok();
         }
