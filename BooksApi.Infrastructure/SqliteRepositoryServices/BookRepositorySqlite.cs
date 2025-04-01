@@ -12,30 +12,16 @@ using BooksApi.Domain.Common;
 
 namespace BooksApi.Infrastructure.SqliteRepositoryServices
 {
-    public class BookRepositorySqlite : IBookRepository
-    {
+    public class BookRepositorySqlite : IBookRepository 
+    { 
         private readonly AppDbContext Db;
         public BookRepositorySqlite(AppDbContext Db)
         {
             this.Db = Db;
         }
-        public async Task<PaginatedList<Book>> GetBooks(int pageIndex, int pageSize, string? cat, int? authorId, CancellationToken cancellationToken)
+        public async Task<PaginatedList<Book>> GetBooks(int pageIndex, int pageSize, CancellationToken cancellationToken)
         {
             var books_table = Db.BooksTab.AsTracking();
-
-            int count = 0;
-
-            if (!string.IsNullOrEmpty(cat))
-            {
-                books_table = books_table.Where(b => b.Genre == cat);
-                count = await books_table.CountAsync(cancellationToken);
-            }
-
-            if (authorId.HasValue)
-            {
-                books_table = books_table.Where(b => b.AuthorId == authorId);
-                count = await books_table.CountAsync(cancellationToken);
-            }
 
             var books = await books_table
                       .Include(b => b.book_author)
@@ -43,7 +29,60 @@ namespace BooksApi.Infrastructure.SqliteRepositoryServices
                       .Take(pageSize)
                       .ToListAsync(cancellationToken);
 
-            if (count == 0) { count = await Db.BooksTab.CountAsync(cancellationToken); }
+            int count = await Db.BooksTab.CountAsync(cancellationToken);
+
+            var totalPages = (int)Math.Ceiling(count / (double)pageSize);
+
+            return new PaginatedList<Book>(books, pageIndex, totalPages);
+        }
+        public async Task<PaginatedList<Book>> GetBooksByCat(int pageIndex, int pageSize, string cat, CancellationToken cancellationToken)
+        {
+            var books_table = Db.BooksTab.AsTracking();
+
+            books_table = books_table.Where(b => b.Genre == cat);
+            
+            int count = await books_table.CountAsync(cancellationToken);
+
+            var books = await books_table
+                      .Include(b => b.book_author)
+                      .Skip((pageIndex - 1) * pageSize)
+                      .Take(pageSize)
+                      .ToListAsync(cancellationToken);
+
+            var totalPages = (int)Math.Ceiling(count / (double)pageSize);
+
+            return new PaginatedList<Book>(books, pageIndex, totalPages);
+        }
+        public async Task<PaginatedList<Book>> GetBooksByAuthor(int pageIndex, int pageSize, int authorId, CancellationToken cancellationToken)
+        {
+            var books_table = Db.BooksTab.AsTracking();
+
+            books_table = books_table.Where(b => b.AuthorId == authorId);
+            int count = await books_table.CountAsync(cancellationToken);
+
+            var books = await books_table
+                      .Include(b => b.book_author)
+                      .Skip((pageIndex - 1) * pageSize)
+                      .Take(pageSize)
+                      .ToListAsync(cancellationToken);
+
+            var totalPages = (int)Math.Ceiling(count / (double)pageSize);
+
+            return new PaginatedList<Book>(books, pageIndex, totalPages);
+        }
+        public async Task<PaginatedList<Book>> GetBooksByAll(int pageIndex, int pageSize, string cat, int authorId, CancellationToken cancellationToken)
+        {
+            var books_table = Db.BooksTab.AsTracking();
+
+            books_table = books_table.Where(b => b.Genre == cat && b.AuthorId == authorId);
+            
+            int count = await books_table.CountAsync(cancellationToken);
+
+            var books = await books_table
+                      .Include(b => b.book_author)
+                      .Skip((pageIndex - 1) * pageSize)
+                      .Take(pageSize)
+                      .ToListAsync(cancellationToken);
 
             var totalPages = (int)Math.Ceiling(count / (double)pageSize);
 
@@ -91,11 +130,13 @@ namespace BooksApi.Infrastructure.SqliteRepositoryServices
             
             await Db.SaveChangesAsync(cancellationToken);
         }
+        
+        // Из за того что SQlite не поддерживает кирилицу в операторе like, я порционно выгружаю книги и сохраняю те что подходят по условию
         public async Task<List<Book>> FindBookBySubstringName(string name, CancellationToken cancellationToken)
         {
             var name_lower = name.ToLower();
 
-            int pageSize = 20;
+            int pageSize = 50;
             int pageNumber = 0;
 
             List<string> selected_Names = new List<string>();

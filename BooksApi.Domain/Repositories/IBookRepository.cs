@@ -10,7 +10,14 @@ namespace BooksApi.Domain.Repositories
 {
     public interface IBookRepository
     {
-        Task<PaginatedList<Book>> GetBooks(int pageIndex, int pageSize, string? cat, int? authorId, CancellationToken cancellationToken);
+        Task<PaginatedList<Book>> GetBooks(int pageIndex, int pageSize, CancellationToken cancellationToken);
+
+        Task<PaginatedList<Book>> GetBooksByCat(int pageIndex, int pageSize, string cat, CancellationToken cancellationToken);
+
+        Task<PaginatedList<Book>> GetBooksByAuthor(int pageIndex, int pageSize, int authorId, CancellationToken cancellationToken);
+
+        Task<PaginatedList<Book>> GetBooksByAll(int pageIndex, int pageSize, string cat, int authorId, CancellationToken cancellationToken);
+
         Task<Book> GetBookById(int bookId, CancellationToken cancellationToken);
         Task<Book> GetBookByISBN(string ISBN, CancellationToken cancellationToken);
         Task AddBook(Book book, CancellationToken cancellationToken);

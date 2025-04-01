@@ -52,7 +52,24 @@ namespace BooksApi.Application.Services
         }
         public async Task<PaginatedList<Book>> GetBooksPagList(int pageIndex, int pageSize, string? cat, int? authorId, CancellationToken cancellationToken)
         {
-            var books = await br.GetBooks(pageIndex, pageSize, cat, authorId, cancellationToken);
+            PaginatedList<Book> books = null;
+
+            if (cat == null && authorId == null)
+            {
+                books = await br.GetBooks(pageIndex, pageSize, cancellationToken);
+            }
+            else if (cat != null && authorId == null)
+            {
+                books = await br.GetBooksByCat(pageIndex, pageSize, cat, cancellationToken);
+            }
+            else if (cat == null && authorId != null)
+            {
+                books = await br.GetBooksByAuthor(pageIndex, pageSize, authorId.Value, cancellationToken);
+            }
+            else 
+            {
+                books = await br.GetBooksByAll(pageIndex, pageSize, cat, authorId.Value, cancellationToken);
+            }
 
             foreach (Book bk in books.Items)
             {
