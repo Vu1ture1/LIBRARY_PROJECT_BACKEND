@@ -30,7 +30,6 @@ builder.Services.AddValidatorsFromAssemblyContaining<UserLoginDataValidator>();
 builder.Services.AddValidatorsFromAssemblyContaining<BookDataValidator>();
 builder.Services.AddValidatorsFromAssemblyContaining<BookUpdateDataValidator>();
 
-
 builder.Services.AddAutoMapper(typeof(MappingProfile));
 
 var config = builder.Configuration;
