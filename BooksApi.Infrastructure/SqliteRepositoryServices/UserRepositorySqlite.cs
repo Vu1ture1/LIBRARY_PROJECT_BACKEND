@@ -23,6 +23,11 @@ namespace BooksApi.Infrastructure.SqliteRepositoryServices
         {
             return await Db.UsersTab.FirstOrDefaultAsync(u => u.Email == email, cancellationToken);
         }
+
+        public async Task<User> GetUserById(int Id, CancellationToken cancellationToken)
+        {
+            return await Db.UsersTab.FirstOrDefaultAsync(u => u.Id == Id, cancellationToken);
+        }
         public async Task<User> GetUserByEmailAndPassword(string email, string password, CancellationToken cancellationToken)
         {
             return await Db.UsersTab.FirstOrDefaultAsync(u => u.Email == email && u.Password == password, cancellationToken);

@@ -21,9 +21,7 @@ namespace BooksApi.Infrastructure.SqliteRepositoryServices
         }
         public async Task<PaginatedList<Book>> GetBooks(int pageIndex, int pageSize, CancellationToken cancellationToken)
         {
-            var books_table = Db.BooksTab.AsTracking();
-
-            var books = await books_table
+            var books = await Db.BooksTab
                       .Include(b => b.book_author)
                       .Skip((pageIndex - 1) * pageSize)
                       .Take(pageSize)
@@ -37,9 +35,7 @@ namespace BooksApi.Infrastructure.SqliteRepositoryServices
         }
         public async Task<PaginatedList<Book>> GetBooksByCat(int pageIndex, int pageSize, string cat, CancellationToken cancellationToken)
         {
-            var books_table = Db.BooksTab.AsTracking();
-
-            books_table = books_table.Where(b => b.Genre == cat);
+            var books_table = Db.BooksTab.Where(b => b.Genre == cat);
             
             int count = await books_table.CountAsync(cancellationToken);
 
@@ -55,9 +51,8 @@ namespace BooksApi.Infrastructure.SqliteRepositoryServices
         }
         public async Task<PaginatedList<Book>> GetBooksByAuthor(int pageIndex, int pageSize, int authorId, CancellationToken cancellationToken)
         {
-            var books_table = Db.BooksTab.AsTracking();
-
-            books_table = books_table.Where(b => b.AuthorId == authorId);
+            var books_table = Db.BooksTab.Where(b => b.AuthorId == authorId);
+            
             int count = await books_table.CountAsync(cancellationToken);
 
             var books = await books_table
@@ -72,9 +67,7 @@ namespace BooksApi.Infrastructure.SqliteRepositoryServices
         }
         public async Task<PaginatedList<Book>> GetBooksByAll(int pageIndex, int pageSize, string cat, int authorId, CancellationToken cancellationToken)
         {
-            var books_table = Db.BooksTab.AsTracking();
-
-            books_table = books_table.Where(b => b.Genre == cat && b.AuthorId == authorId);
+            var books_table = Db.BooksTab.Where(b => b.Genre == cat && b.AuthorId == authorId);
             
             int count = await books_table.CountAsync(cancellationToken);
 
@@ -102,19 +95,15 @@ namespace BooksApi.Infrastructure.SqliteRepositoryServices
 
             await Db.SaveChangesAsync(cancellationToken);
         }
-        public async Task ChangeBook(int Id, Book changed_book, CancellationToken cancellationToken)
+        public async Task ChangeBook(Book changed_book, CancellationToken cancellationToken)
         {
-            var existingBook = await Db.BooksTab.FindAsync(Id, cancellationToken);
-
-            Db.BooksTab.Entry(existingBook).CurrentValues.SetValues(changed_book);
-
+            Db.BooksTab.Update(changed_book);
+            
             await Db.SaveChangesAsync(cancellationToken);
         }
-        public async Task RemoveBook(int Id, CancellationToken cancellationToken)
+        public async Task RemoveBook(Book book, CancellationToken cancellationToken)
         {
-            var existingBook = await Db.BooksTab.FindAsync(Id, cancellationToken);
-
-            Db.BooksTab.Remove(existingBook);
+            Db.BooksTab.Remove(book);
 
             await Db.SaveChangesAsync(cancellationToken);
         }
@@ -144,7 +133,6 @@ namespace BooksApi.Infrastructure.SqliteRepositoryServices
             while (true)
             {
                 var bookNames = await Db.BooksTab
-                    .AsTracking()
                     .Select(b => b.Name)
                     .Skip(pageNumber * pageSize)
                     .Take(pageSize)
@@ -167,7 +155,6 @@ namespace BooksApi.Infrastructure.SqliteRepositoryServices
             }
 
             return await Db.BooksTab
-                .AsTracking()
                 .Include(b => b.book_author)
                 .Where(b => selected_Names.Contains(b.Name))
                 .Take(10)
@@ -175,11 +162,11 @@ namespace BooksApi.Infrastructure.SqliteRepositoryServices
         }
         public async Task<List<Book>> FindBooksByAuthor(int author_id, CancellationToken cancellationToken)
         {
-            return await Db.BooksTab.AsTracking().Where(b => b.AuthorId == author_id).ToListAsync(cancellationToken);
+            return await Db.BooksTab.Where(b => b.AuthorId == author_id).ToListAsync(cancellationToken);
         }
         public async Task<List<Book>> FindUserBooksOnHands(int user_id, CancellationToken cancellationToken)
         {
-            return await Db.BooksTab.AsTracking().Include(bk => bk.book_author).Where(b => b.UserThatGetBook == user_id).ToListAsync(cancellationToken);
+            return await Db.BooksTab.Include(bk => bk.book_author).Where(b => b.UserThatGetBook == user_id).ToListAsync(cancellationToken);
         }
     }
 }

@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
-using BooksApi.Domain.Exceptions.BookExceptions;
+using BooksApi.Application.Exceptions.BookExceptions;
 using BooksApi.Application.Interfaces;
 
 namespace BooksApi.Infrastructure.Services

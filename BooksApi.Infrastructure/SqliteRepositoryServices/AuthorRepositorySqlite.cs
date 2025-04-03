@@ -27,19 +27,15 @@ namespace BooksApi.Infrastructure.SqliteRepositoryServices
         {
             return await Db.AuthorsTab.FirstOrDefaultAsync(auth => auth.Id == Id, cancellationToken);
         }
-        public async Task ChangeAuthor(int Id, Author changed_autor, CancellationToken cancellationToken)
+        public async Task ChangeAuthor(Author changed_autor, CancellationToken cancellationToken)
         {
-            var existingAuthor = await Db.AuthorsTab.FindAsync(Id, cancellationToken);
-
-            Db.AuthorsTab.Entry(existingAuthor).CurrentValues.SetValues(changed_autor);
+            Db.AuthorsTab.Update(changed_autor);
 
             await Db.SaveChangesAsync(cancellationToken);
         }
-        public async Task RemoveAuthor(int Id, CancellationToken cancellationToken)
+        public async Task RemoveAuthor(Author autor, CancellationToken cancellationToken)
         {
-            var existingAuthor = await Db.AuthorsTab.FindAsync(Id, cancellationToken);
-
-            Db.AuthorsTab.Remove(existingAuthor);
+            Db.AuthorsTab.Remove(autor);
 
             await Db.SaveChangesAsync(cancellationToken);
         }

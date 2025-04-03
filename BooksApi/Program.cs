@@ -14,6 +14,9 @@ using System.Text;
 using FluentValidation;
 using FluentValidation.AspNetCore;
 using BooksApi.Application.Interfaces;
+using BooksApi.Application.UseCases.UserUseCases;
+using BooksApi.Application.UseCases.BookUseCases;
+using BooksApi.Application.UseCases.AuthorUseCases;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -55,15 +58,35 @@ builder.Services.AddScoped<IBookRepository, BookRepositorySqlite>();
 
 builder.Services.AddScoped<IAuthorRepository, AuthorRepositorySqlite>();
 
-builder.Services.AddTransient<ITokenService, TokenService>();
+builder.Services.AddTransient<ITokenGenerationService, TokenGenerationService>();
+builder.Services.AddTransient<ITokenValidationService, TokenValidationService>();
 
 builder.Services.AddTransient<IFileService, FileService>();
 
-builder.Services.AddTransient<IUserService, UserService>();
+builder.Services.AddTransient<IEncryptService, EncryptService>();
 
-builder.Services.AddTransient<IBookService, BookService>();
+builder.Services.AddTransient<IFileService, FileService>();
 
-builder.Services.AddTransient<IAuthorService, AuthorService>();
+builder.Services.AddScoped<LoginUserUseCase>();
+builder.Services.AddScoped<RegisterUserUseCase>();
+builder.Services.AddScoped<RefreshUserTokensUseCase>();
+
+builder.Services.AddScoped<AddBookUseCase>();
+builder.Services.AddScoped<ChangeBookUseCase>();
+builder.Services.AddScoped<DeleteBookUseCase>();
+builder.Services.AddScoped<FindBooksByAuthorUseCase>();
+builder.Services.AddScoped<FindBooksByNameUseCase>();
+builder.Services.AddScoped<GetAllBooksOnHandsUseCase>();
+builder.Services.AddScoped<GetBookByIdUseCase>();
+builder.Services.AddScoped<GetBookByIsbnUseCase>();
+builder.Services.AddScoped<GetBooksPaginatedListUseCase>();
+builder.Services.AddScoped<GiveBookOnHandsUseCase>();
+
+builder.Services.AddScoped<AddAuthorUseCase>();
+builder.Services.AddScoped<ChangeAuthorUseCase>();
+builder.Services.AddScoped<DeleteAuthorUseCase>();
+builder.Services.AddScoped<GetAllAuthorsUseCase>();
+builder.Services.AddScoped<GetOneAuthorByIdUseCase>();
 
 builder.Services.AddDbContext<AppDbContext>(options =>
 {

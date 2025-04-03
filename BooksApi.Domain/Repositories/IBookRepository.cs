@@ -21,8 +21,8 @@ namespace BooksApi.Domain.Repositories
         Task<Book> GetBookById(int bookId, CancellationToken cancellationToken);
         Task<Book> GetBookByISBN(string ISBN, CancellationToken cancellationToken);
         Task AddBook(Book book, CancellationToken cancellationToken);
-        Task ChangeBook(int Id, Book changed_book, CancellationToken cancellationToken);
-        Task RemoveBook(int Id, CancellationToken cancellationToken);
+        Task ChangeBook(Book changed_book, CancellationToken cancellationToken);
+        Task RemoveBook(Book book, CancellationToken cancellationToken);
         Task GiveBookToUser(int bookId, int userId, CancellationToken cancellationToken);
         Task<List<Book>> FindBookBySubstringName(string name, CancellationToken cancellationToken);
         Task<List<Book>> FindBooksByAuthor(int author_id, CancellationToken cancellationToken);

@@ -10,6 +10,7 @@ namespace BooksApi.Domain.Repositories
     public interface IUserRepository
     {
         Task<User> GetUserByEmail(string email, CancellationToken cancellationToken);
+        Task<User> GetUserById(int Id, CancellationToken cancellationToken);
         Task<User> GetUserByEmailAndPassword(string email, string password, CancellationToken cancellationToken);
         Task AddUser(User user, CancellationToken cancellationToken);
     }

@@ -1,8 +1,8 @@
 ﻿using System.Net;
 using Newtonsoft.Json;
-using BooksApi.Domain.Exceptions.AuthorExceptions;
-using BooksApi.Domain.Exceptions.BookExceptions;
-using BooksApi.Domain.Exceptions.UserExceptions;
+using BooksApi.Application.Exceptions.AuthorExceptions;
+using BooksApi.Application.Exceptions.BookExceptions;
+using BooksApi.Application.Exceptions.UserExceptions;
 
 namespace BooksApi.ExceptionMiddleware
 {
@@ -17,7 +17,7 @@ namespace BooksApi.ExceptionMiddleware
             HttpStatusCode code;
             switch (exception)
             {
-                case InvalidCredentialsException or ExpiredRefreshTokenException:
+                case InvalidCredentialsException or ExpiredRefreshTokenException or UserNotFoundException:
                     code = HttpStatusCode.Unauthorized;
                     break;
                 case EmailAlreadyRegisteredException or BookAlreadyExistsException or InvalidFileSizeException or InvalidFileFormatException or AuthorAlreadyExistsException or InvalidAuthorDataException:
@@ -26,7 +26,9 @@ namespace BooksApi.ExceptionMiddleware
                 case BookNotFoundException or AuthorBooksNotFoundException or AuthorNotFoundException:
                     code = HttpStatusCode.NotFound;
                     break;
-
+                case BookOnHandsException:
+                    code = HttpStatusCode.Conflict;
+                    break;
                 case OperationCanceledException:
                     Console.WriteLine("Операция отменена");
                     code = HttpStatusCode.RequestTimeout;

@@ -1,0 +1,43 @@
+﻿using Microsoft.Extensions.Configuration;
+using Microsoft.IdentityModel.Tokens;
+using BooksApi.Application.Interfaces;
+using System;
+using System.Collections.Generic;
+using System.IdentityModel.Tokens.Jwt;
+using System.Linq;
+using System.Security.Claims;
+using System.Text;
+using System.Threading.Tasks;
+using BooksApi.Application.Exceptions.UserExceptions;
+using System.Threading;
+using BooksApi.Domain.Repositories;
+using BooksApi.Domain.Entities;
+
+namespace BooksApi.Application.Services
+{
+    public class TokenValidationService : ITokenValidationService
+    {
+        private IRefreshTokenRepository rtr;
+        public TokenValidationService(IRefreshTokenRepository rtr, IConfiguration configuration)
+        {
+            this.rtr = rtr;
+        }
+        public async Task<User> ValidateRefreshToken(string refreshToken, CancellationToken cancellationToken)
+        {
+            if (refreshToken == null)
+            {
+                throw new ExpiredRefreshTokenException();
+            }
+
+            var storedToken = await rtr.GetRefreshToken(refreshToken, cancellationToken);
+
+            if (storedToken == null || storedToken.ExpiredDate < DateTime.UtcNow)
+            {
+                throw new ExpiredRefreshTokenException();
+            }
+
+            return storedToken.User;
+        }
+    }
+
+}

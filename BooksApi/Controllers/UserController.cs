@@ -4,12 +4,14 @@ using Microsoft.AspNetCore.Cryptography.KeyDerivation;
 using System.Text;
 using BooksApi.Application.DTOs;
 using BooksApi.Domain.Repositories;
-using BooksApi.Domain.Exceptions.UserExceptions;
+using BooksApi.Application.Exceptions.UserExceptions;
 using AutoMapper;
 using System.Net;
 using System;
 using Newtonsoft.Json;
 using BooksApi.Application.Interfaces;
+using System.Security.Claims;
+using BooksApi.Application.UseCases.UserUseCases;
 
 namespace BooksApi.Controllers
 {
@@ -17,18 +19,14 @@ namespace BooksApi.Controllers
     [Route("api/user")]
     public class UserController : Controller
     {
-        private IUserService us;
-        public UserController(IUserService us)
-        {
-            this.us = us;
-        }
+        public UserController(){}
 
         [HttpPost("login/refresh")]
-        public async Task<ActionResult<string>> RefreshToken(CancellationToken cancellationToken)
+        public async Task<ActionResult<string>> RefreshToken([FromServices] RefreshUserTokensUseCase use_case, CancellationToken cancellationToken)
         {
             var refreshToken = Request.Cookies["refreshToken"];
 
-            var cookieRes = await us.RefreshTokenAsync(refreshToken, cancellationToken);
+            var cookieRes = await use_case.RefreshTokenAsync(refreshToken, cancellationToken);
 
             Response.Cookies.Append("refreshToken", cookieRes.RefreshToken, new CookieOptions
             {
@@ -43,9 +41,9 @@ namespace BooksApi.Controllers
         }
 
         [HttpPost("login")]
-        public async Task<ActionResult<string>> LoginUser([FromBody] UserLoginData loginDto, CancellationToken cancellationToken)
+        public async Task<ActionResult<string>> LoginUser([FromServices] LoginUserUseCase use_case, [FromBody] UserLoginData loginDto, CancellationToken cancellationToken)
         {
-            var cookieRes = await us.LoginUserAsync(loginDto, cancellationToken);
+            var cookieRes = await use_case.LoginUserAsync(loginDto, cancellationToken);
 
             Response.Cookies.Append("refreshToken", cookieRes.RefreshToken, new CookieOptions
             {
@@ -60,9 +58,9 @@ namespace BooksApi.Controllers
         }
 
         [HttpPost("register")]
-        public async Task<ActionResult<string>> RegisterUser([FromBody] UserLoginData regDto, CancellationToken cancellationToken)
+        public async Task<ActionResult<string>> RegisterUser([FromServices] RegisterUserUseCase use_case, [FromBody] UserLoginData regDto, CancellationToken cancellationToken)
         {
-            var cookieRes = await us.RegisterAsync(regDto, cancellationToken);
+            var cookieRes = await use_case.RegisterAsync(regDto, cancellationToken);
 
             Response.Cookies.Append("refreshToken", cookieRes.RefreshToken, new CookieOptions
             {

@@ -11,8 +11,8 @@ namespace BooksApi.Domain.Repositories
     {
         Task<List<Author>> GetAllAuthors(CancellationToken cancellationToken);
         Task<Author> GetAuthorById(int Id, CancellationToken cancellationToken);
-        Task ChangeAuthor(int Id, Author changed_autor, CancellationToken cancellationToken);
-        Task RemoveAuthor(int Id, CancellationToken cancellationToken);
+        Task ChangeAuthor(Author changed_autor, CancellationToken cancellationToken);
+        Task RemoveAuthor(Author autor, CancellationToken cancellationToken);
         Task AddAuthor(Author autor, CancellationToken cancellationToken);
     }
 }

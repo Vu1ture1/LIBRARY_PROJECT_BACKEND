@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
 using BooksApi.Controllers;
-using BooksApi.Domain.Exceptions.BookExceptions;
+using BooksApi.Application.Exceptions.BookExceptions;
 using BooksApi.Infrastructure.DbService;
 using BooksApi.Domain.Entities;
 using BooksApi.Application.Interfaces;
@@ -8,18 +8,13 @@ using BooksApi.Application.DTOs;
 using BooksApi.Domain.Repositories;
 using BooksApi.Infrastructure.SqliteRepositoryServices;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using Moq;
-using System;
-using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
-using System.Linq;
 using System.Security.Claims;
 using System.Text;
-using System.Threading.Tasks;
-using BooksApi.Application.Services;
+using BooksApi.Application.UseCases.BookUseCases;
 
 namespace BookApiUnitTestCase
 {
@@ -33,11 +28,10 @@ namespace BookApiUnitTestCase
 
         private readonly Mock<IMapper> mock_mapper;
 
-        private readonly IBookService service;
+        private readonly AddBookUseCase add_use_case;
+        private readonly GetBookByIdUseCase get_by_id_use_case;
 
         private readonly BookController bookController;
-
-       
 
         private Author author = null;
 
@@ -122,9 +116,11 @@ namespace BookApiUnitTestCase
 
             mock_mapper = new Mock<IMapper>();
 
-            service = new BookService(bookRepository, mock_fs.Object, mock_mapper.Object);
+            add_use_case = new AddBookUseCase(bookRepository, mock_fs.Object, mock_mapper.Object);
 
-            bookController = new BookController(service);
+            get_by_id_use_case = new GetBookByIdUseCase(bookRepository);
+
+            bookController = new BookController();
 
             var token = GenerateJwtTokenForTest("Admin", "1");
 
@@ -147,7 +143,7 @@ namespace BookApiUnitTestCase
 
             var bookData = new BookData
             {
-                ISBN = "978-5-17-057139-2",
+                ISBN = "978-5-17-057139-9",
                 Name = "Test book",
                 Genre = "Fiction",
                 Description = "Some book description.",
@@ -167,10 +163,48 @@ namespace BookApiUnitTestCase
                    AuthorId = bookData.AuthorId
                 });
 
-            var result = await bookController.AddBook(bookData, token);
+            var result = await bookController.AddBook(add_use_case, bookData, token);
 
             var actionResult = Assert.IsType<OkResult>(result);
             Assert.Equal(StatusCodes.Status200OK, actionResult.StatusCode);
+        }
+
+        [Fact]
+        public async Task AddBook_Exception_Test()
+        {
+            CancellationTokenSource cancelTokenSource = new CancellationTokenSource();
+
+            CancellationToken token = cancelTokenSource.Token;
+
+            var bookData = new BookData
+            {
+                ISBN = "978-5-17-057139-2",
+                Name = "Test book",
+                Genre = "Fiction",
+                Description = "Some book description.",
+                AuthorId = author.Id
+            };
+
+            mock_fs.Setup(fs => fs.SaveFileAsync(It.IsAny<IFormFile>(), It.IsAny<string[]>(), token))
+                .ReturnsAsync("savedImage.jpg");
+
+            mock_mapper.Setup(mapper => mapper.Map<Book>(It.IsAny<BookData>()))
+                .Returns((BookData bookData) => new Book
+                {
+                    ISBN = bookData.ISBN,
+                    Name = bookData.Name,
+                    Genre = bookData.Genre,
+                    Description = bookData.Description,
+                    AuthorId = bookData.AuthorId
+                });
+
+            var exception = await Assert.ThrowsAsync<BookAlreadyExistsException>(async () =>
+            {
+                await bookController.AddBook(add_use_case, bookData, token);
+            });
+
+            // Assert
+            Assert.Equal("Книга с ISBN 978-5-17-057139-2 уже существует.", exception.Message);
         }
 
         [Fact]
@@ -182,7 +216,7 @@ namespace BookApiUnitTestCase
 
             int id = 1;
 
-            var result = await bookController.GetOneBookById(id, token);
+            var result = await bookController.GetOneBookById(get_by_id_use_case, id, token);
             
             // Assert
             var actionResult = Assert.IsType<OkObjectResult>(result.Result);
@@ -206,7 +240,7 @@ namespace BookApiUnitTestCase
 
             var exception = await Assert.ThrowsAsync<BookNotFoundException>(async () =>
             {
-                await bookController.GetOneBookById(id, token);
+                await bookController.GetOneBookById(get_by_id_use_case, id, token);
             });
 
             // Assert
@@ -233,5 +267,4 @@ namespace BookApiUnitTestCase
             return new JwtSecurityTokenHandler().WriteToken(jwtToken);
         }
     }
-
 }

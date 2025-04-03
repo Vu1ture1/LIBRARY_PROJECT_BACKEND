@@ -1,16 +1,8 @@
 ﻿using BooksApi.Infrastructure.DbService;
 using BooksApi.Domain.Entities;
 using BooksApi.Domain.Repositories;
-using Microsoft.Extensions.Options;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Moq;
 using BooksApi.Domain.Common;
 using BooksApi.Infrastructure.SqliteRepositoryServices;
-using Xunit;
 
 namespace BookApiUnitTestCase
 {
@@ -150,7 +142,7 @@ namespace BookApiUnitTestCase
             CancellationToken token = cancelTokenSource.Token;
 
             // Act
-            var result = await bookRepository.GetBooks(1, 10, null, null, token);
+            var result = await bookRepository.GetBooks(1, 10, token);
 
             // Assert
             Assert.IsType<PaginatedList<Book>>(result);
