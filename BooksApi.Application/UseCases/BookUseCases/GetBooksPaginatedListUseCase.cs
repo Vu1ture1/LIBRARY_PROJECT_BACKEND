@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using BooksApi.Application.Interfaces;
+using BooksApi.Application.UseCasesInterfaces.IBookUseCases;
 using BooksApi.Domain.Common;
 using BooksApi.Domain.Entities;
 using BooksApi.Domain.Repositories;
@@ -11,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace BooksApi.Application.UseCases.BookUseCases
 {
-    public class GetBooksPaginatedListUseCase
+    public class GetBooksPaginatedListUseCase : IGetBooksPaginatedListUseCase
     {
         private readonly IBookRepository br;
         public GetBooksPaginatedListUseCase(IBookRepository br)

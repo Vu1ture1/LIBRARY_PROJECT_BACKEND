@@ -8,8 +8,7 @@ using System.Security.Claims;
 using BooksApi.Application.Exceptions.BookExceptions;
 using AutoMapper;
 using BooksApi.Application.Interfaces;
-using BooksApi.Application.UseCases.UserUseCases;
-using BooksApi.Application.UseCases.BookUseCases;
+using BooksApi.Application.UseCasesInterfaces.IBookUseCases;
 
 namespace BooksApi.Controllers
 {
@@ -20,7 +19,7 @@ namespace BooksApi.Controllers
         public BookController(){}
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<Book>> GetOneBookById([FromServices] GetBookByIdUseCase use_case, int id, CancellationToken cancellationToken)
+        public async Task<ActionResult<Book>> GetOneBookById([FromServices] IGetBookByIdUseCase use_case, int id, CancellationToken cancellationToken)
         {
             var book = await use_case.GetBookById(id, cancellationToken);
 
@@ -28,7 +27,7 @@ namespace BooksApi.Controllers
         }
 
         [HttpGet("pagination")]
-        public async Task<ActionResult<PaginatedList<Book>>> GetAllBooksWithPagination([FromServices] GetBooksPaginatedListUseCase use_case, CancellationToken cancellationToken, int pageIndex = 1, int pageSize = 4, string? cat = null, int? authorId = null)
+        public async Task<ActionResult<PaginatedList<Book>>> GetAllBooksWithPagination([FromServices] IGetBooksPaginatedListUseCase use_case, CancellationToken cancellationToken, int pageIndex = 1, int pageSize = 4, string? cat = null, int? authorId = null)
         {
             var books = await use_case.GetBooksPagList(pageIndex, pageSize, cat, authorId, cancellationToken);
 
@@ -36,7 +35,7 @@ namespace BooksApi.Controllers
         }
 
         [HttpGet("isbn/{ISBN}")]
-        public async Task<ActionResult<Book>> GetOneBookByISBN([FromServices] GetBookByIsbnUseCase use_case, string ISBN, CancellationToken cancellationToken)
+        public async Task<ActionResult<Book>> GetOneBookByISBN([FromServices] IGetBookByIsbnUseCase use_case, string ISBN, CancellationToken cancellationToken)
         {
             var book = await use_case.GetBookByISBN(ISBN, cancellationToken);
             
@@ -45,7 +44,7 @@ namespace BooksApi.Controllers
 
         [Authorize]
         [HttpGet("onhand/{id}")]
-        public async Task<IActionResult> GiveOneBookOnHands([FromServices] GiveBookOnHandsUseCase use_case, int id, CancellationToken cancellationToken)
+        public async Task<IActionResult> GiveOneBookOnHands([FromServices] IGiveBookOnHandsUseCase use_case, int id, CancellationToken cancellationToken)
         {
             var userIdString = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
@@ -58,7 +57,7 @@ namespace BooksApi.Controllers
 
         [Authorize]
         [HttpGet("onhand/user")]
-        public async Task<ActionResult<List<Book>>> GetAllBooksOnHands([FromServices] GetAllBooksOnHandsUseCase use_case, CancellationToken cancellationToken)
+        public async Task<ActionResult<List<Book>>> GetAllBooksOnHands([FromServices] IGetAllBooksOnHandsUseCase use_case, CancellationToken cancellationToken)
         {
             var userIdString = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
@@ -71,7 +70,7 @@ namespace BooksApi.Controllers
 
         [HttpPost("add")]
         [Authorize(Policy = "AdminOnly")]
-        public async Task<IActionResult> AddBook([FromServices] AddBookUseCase use_case, [FromForm] BookData bkDTO, CancellationToken cancellationToken)
+        public async Task<IActionResult> AddBook([FromServices] IAddBookUseCase use_case, [FromForm] BookData bkDTO, CancellationToken cancellationToken)
         {
             await use_case.AddBook(bkDTO, cancellationToken);
             
@@ -80,7 +79,7 @@ namespace BooksApi.Controllers
 
         [HttpPut("change/{id}")]
         [Authorize(Policy = "AdminOnly")]
-        public async Task<IActionResult> ChangeBook([FromServices] ChangeBookUseCase use_case, int id, [FromForm] BookUpdateData bkDTO, CancellationToken cancellationToken)
+        public async Task<IActionResult> ChangeBook([FromServices] IChangeBookUseCase use_case, int id, [FromForm] BookUpdateData bkDTO, CancellationToken cancellationToken)
         {
             await use_case.ChangeBook(id, bkDTO, cancellationToken);
 
@@ -89,7 +88,7 @@ namespace BooksApi.Controllers
 
         [HttpDelete("delete/{id}")]
         [Authorize(Policy = "AdminOnly")]
-        public async Task<IActionResult> DeleteBook([FromServices] DeleteBookUseCase use_case, int id, CancellationToken cancellationToken)
+        public async Task<IActionResult> DeleteBook([FromServices] IDeleteBookUseCase use_case, int id, CancellationToken cancellationToken)
         {
             await use_case.DeleteBook(id, cancellationToken);
 
@@ -97,7 +96,7 @@ namespace BooksApi.Controllers
         }
 
         [HttpGet("find/author/{author_id}")]
-        public async Task<ActionResult<List<Book>>> FindBooksByAuthor([FromServices] FindBooksByAuthorUseCase use_case, int author_id, CancellationToken cancellationToken)
+        public async Task<ActionResult<List<Book>>> FindBooksByAuthor([FromServices] IFindBooksByAuthorUseCase use_case, int author_id, CancellationToken cancellationToken)
         {
             var books = await use_case.FindBooksByAuthor(author_id, cancellationToken);
 
@@ -105,7 +104,7 @@ namespace BooksApi.Controllers
         }
 
         [HttpGet("find/{book_subname}")]
-        public async Task<ActionResult<List<Book>>> FindBooksByName([FromServices] FindBooksByNameUseCase use_case, string? book_subname, CancellationToken cancellationToken)
+        public async Task<ActionResult<List<Book>>> FindBooksByName([FromServices] IFindBooksByNameUseCase use_case, string? book_subname, CancellationToken cancellationToken)
         {
             var books = await use_case.FindBooksByName(book_subname, cancellationToken);
 

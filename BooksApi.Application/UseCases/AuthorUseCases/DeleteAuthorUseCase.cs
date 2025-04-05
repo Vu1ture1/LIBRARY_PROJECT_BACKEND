@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using BooksApi.Application.Exceptions.AuthorExceptions;
 using BooksApi.Application.Interfaces;
+using BooksApi.Application.UseCasesInterfaces.IAuthorUseCases;
 using BooksApi.Domain.Entities;
 using BooksApi.Domain.Repositories;
 using System;
@@ -11,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace BooksApi.Application.UseCases.AuthorUseCases
 {
-    public class DeleteAuthorUseCase
+    public class DeleteAuthorUseCase : IDeleteAuthorUseCase
     {
         private readonly IAuthorRepository ar;
 

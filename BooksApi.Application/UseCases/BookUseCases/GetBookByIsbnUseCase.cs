@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using BooksApi.Application.Exceptions.BookExceptions;
 using BooksApi.Application.Interfaces;
+using BooksApi.Application.UseCasesInterfaces.IBookUseCases;
 using BooksApi.Domain.Entities;
 using BooksApi.Domain.Repositories;
 using System;
@@ -11,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace BooksApi.Application.UseCases.BookUseCases
 {
-    public class GetBookByIsbnUseCase
+    public class GetBookByIsbnUseCase : IGetBookByIsbnUseCase
     {
         private readonly IBookRepository br;
         public GetBookByIsbnUseCase(IBookRepository br)

@@ -12,7 +12,7 @@ using Microsoft.AspNetCore.Cryptography.KeyDerivation;
 using BooksApi.Application.Responses;
 using BooksApi.Application.Interfaces;
 using BooksApi.Application.UseCases.UserUseCases;
-using BooksApi.Application.UseCases.AuthorUseCases;
+using BooksApi.Application.UseCasesInterfaces.IAuthorUseCases;
 
 namespace BooksApi.Controllers
 {
@@ -23,7 +23,7 @@ namespace BooksApi.Controllers
         public AuthorController(){}
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<Author>> GetOneAuthorById([FromServices] GetOneAuthorByIdUseCase use_case, int id, CancellationToken cancellationToken)
+        public async Task<ActionResult<Author>> GetOneAuthorById([FromServices] IGetOneAuthorByIdUseCase use_case, int id, CancellationToken cancellationToken)
         {
             var author = await use_case.GetOneAuthorById(id, cancellationToken);
 
@@ -31,7 +31,7 @@ namespace BooksApi.Controllers
         }
 
         [HttpGet("all")]
-        public async Task<ActionResult<List<Author>>> GetAllAuthors([FromServices] GetAllAuthorsUseCase use_case, CancellationToken cancellationToken)
+        public async Task<ActionResult<List<Author>>> GetAllAuthors([FromServices] IGetAllAuthorsUseCase use_case, CancellationToken cancellationToken)
         {
             var authors = await use_case.GetAllAuthors(cancellationToken);
 
@@ -40,7 +40,7 @@ namespace BooksApi.Controllers
 
         [HttpPost("add")]
         [Authorize(Policy = "AdminOnly")]
-        public async Task<IActionResult> AddAuthor([FromServices] AddAuthorUseCase use_case, [FromBody] AuthorData authorDTO, CancellationToken cancellationToken)
+        public async Task<IActionResult> AddAuthor([FromServices] IAddAuthorUseCase use_case, [FromBody] AuthorData authorDTO, CancellationToken cancellationToken)
         {
             await use_case.AddAuthor(authorDTO, cancellationToken);
 
@@ -49,7 +49,7 @@ namespace BooksApi.Controllers
 
         [HttpPut("change/{id}")]
         [Authorize(Policy = "AdminOnly")]
-        public async Task<IActionResult> ChangeAuthor([FromServices] ChangeAuthorUseCase use_case, int id, [FromBody] AuthorData authorDTO, CancellationToken cancellationToken)
+        public async Task<IActionResult> ChangeAuthor([FromServices] IChangeAuthorUseCase use_case, int id, [FromBody] AuthorData authorDTO, CancellationToken cancellationToken)
         {
             await use_case.ChangeAuthor(id, authorDTO, cancellationToken);
 
@@ -58,7 +58,7 @@ namespace BooksApi.Controllers
 
         [HttpDelete("delete/{id}")]
         [Authorize(Policy = "AdminOnly")]
-        public async Task<IActionResult> DeleteAuthor([FromServices] DeleteAuthorUseCase use_case, int id, CancellationToken cancellationToken)
+        public async Task<IActionResult> DeleteAuthor([FromServices] IDeleteAuthorUseCase use_case, int id, CancellationToken cancellationToken)
         {
             await use_case.DeleteAuthor(id, cancellationToken);
 

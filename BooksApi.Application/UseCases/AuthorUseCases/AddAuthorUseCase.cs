@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using BooksApi.Application.DTOs;
 using BooksApi.Application.Interfaces;
+using BooksApi.Application.UseCasesInterfaces.IAuthorUseCases;
 using BooksApi.Domain.Entities;
 using BooksApi.Domain.Repositories;
 using Microsoft.AspNetCore.Mvc;
@@ -12,7 +13,7 @@ using System.Threading.Tasks;
 
 namespace BooksApi.Application.UseCases.AuthorUseCases
 {
-    public class AddAuthorUseCase
+    public class AddAuthorUseCase : IAddAuthorUseCase
     {
         private readonly IAuthorRepository ar;
 

@@ -13,6 +13,6 @@ namespace BooksApi.Application.Interfaces
 {
     public interface ITokenValidationService
     {
-        public Task<User> ValidateRefreshToken(string refreshToken, CancellationToken cancellationToken);
+        public User ValidateRefreshToken(RefreshToken refreshToken, CancellationToken cancellationToken);
     }
 }

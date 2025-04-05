@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using BooksApi.Application.Exceptions.AuthorExceptions;
 using BooksApi.Application.Interfaces;
+using BooksApi.Application.UseCasesInterfaces.IAuthorUseCases;
 using BooksApi.Domain.Entities;
 using BooksApi.Domain.Repositories;
 using Microsoft.AspNetCore.Mvc;
@@ -12,7 +13,7 @@ using System.Threading.Tasks;
 
 namespace BooksApi.Application.UseCases.AuthorUseCases
 {
-    public class GetAllAuthorsUseCase
+    public class GetAllAuthorsUseCase : IGetAllAuthorsUseCase
     {
         private readonly IAuthorRepository ar;
         public GetAllAuthorsUseCase(IAuthorRepository ar)

@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using BooksApi.Application.Exceptions.BookExceptions;
 using BooksApi.Application.Interfaces;
+using BooksApi.Application.UseCasesInterfaces.IBookUseCases;
 using BooksApi.Domain.Entities;
 using BooksApi.Domain.Repositories;
 using Microsoft.AspNetCore.Mvc;
@@ -12,7 +13,7 @@ using System.Threading.Tasks;
 
 namespace BooksApi.Application.UseCases.BookUseCases
 {
-    public class FindBooksByNameUseCase
+    public class FindBooksByNameUseCase : IFindBooksByNameUseCase
     {
         private readonly IBookRepository br;
         public FindBooksByNameUseCase(IBookRepository br)

@@ -11,7 +11,7 @@ using System;
 using Newtonsoft.Json;
 using BooksApi.Application.Interfaces;
 using System.Security.Claims;
-using BooksApi.Application.UseCases.UserUseCases;
+using BooksApi.Application.UseCasesInterfaces.IUserUseCases;
 
 namespace BooksApi.Controllers
 {
@@ -22,7 +22,7 @@ namespace BooksApi.Controllers
         public UserController(){}
 
         [HttpPost("login/refresh")]
-        public async Task<ActionResult<string>> RefreshToken([FromServices] RefreshUserTokensUseCase use_case, CancellationToken cancellationToken)
+        public async Task<ActionResult<string>> RefreshToken([FromServices] IRefreshUserTokensUseCase use_case, CancellationToken cancellationToken)
         {
             var refreshToken = Request.Cookies["refreshToken"];
 
@@ -41,7 +41,7 @@ namespace BooksApi.Controllers
         }
 
         [HttpPost("login")]
-        public async Task<ActionResult<string>> LoginUser([FromServices] LoginUserUseCase use_case, [FromBody] UserLoginData loginDto, CancellationToken cancellationToken)
+        public async Task<ActionResult<string>> LoginUser([FromServices] ILoginUserUseCase use_case, [FromBody] UserLoginData loginDto, CancellationToken cancellationToken)
         {
             var cookieRes = await use_case.LoginUserAsync(loginDto, cancellationToken);
 
@@ -58,7 +58,7 @@ namespace BooksApi.Controllers
         }
 
         [HttpPost("register")]
-        public async Task<ActionResult<string>> RegisterUser([FromServices] RegisterUserUseCase use_case, [FromBody] UserLoginData regDto, CancellationToken cancellationToken)
+        public async Task<ActionResult<string>> RegisterUser([FromServices] IRegisterUserUseCase use_case, [FromBody] UserLoginData regDto, CancellationToken cancellationToken)
         {
             var cookieRes = await use_case.RegisterAsync(regDto, cancellationToken);
 

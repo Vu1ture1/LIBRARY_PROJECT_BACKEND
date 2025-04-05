@@ -17,26 +17,15 @@ namespace BooksApi.Application.Services
 {
     public class TokenValidationService : ITokenValidationService
     {
-        private IRefreshTokenRepository rtr;
-        public TokenValidationService(IRefreshTokenRepository rtr, IConfiguration configuration)
+        public TokenValidationService(){}
+        public User ValidateRefreshToken(RefreshToken refreshToken, CancellationToken cancellationToken)
         {
-            this.rtr = rtr;
-        }
-        public async Task<User> ValidateRefreshToken(string refreshToken, CancellationToken cancellationToken)
-        {
-            if (refreshToken == null)
+            if (refreshToken == null || refreshToken.ExpiredDate < DateTime.UtcNow)
             {
                 throw new ExpiredRefreshTokenException();
             }
 
-            var storedToken = await rtr.GetRefreshToken(refreshToken, cancellationToken);
-
-            if (storedToken == null || storedToken.ExpiredDate < DateTime.UtcNow)
-            {
-                throw new ExpiredRefreshTokenException();
-            }
-
-            return storedToken.User;
+            return refreshToken.User;
         }
     }
 

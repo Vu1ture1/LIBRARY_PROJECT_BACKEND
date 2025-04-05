@@ -107,18 +107,6 @@ namespace BooksApi.Infrastructure.SqliteRepositoryServices
 
             await Db.SaveChangesAsync(cancellationToken);
         }
-        public async Task GiveBookToUser(int bookId, int userId, CancellationToken cancellationToken)
-        {
-            var book = await Db.BooksTab.FindAsync(bookId, cancellationToken);
-
-            var user = await Db.UsersTab.FindAsync(userId, cancellationToken);
-
-            book.BorrowedAt = DateTime.Now;
-            book.ReturnBy = DateTime.Now.AddDays(14);
-            book.UserThatGetBook = user.Id;
-            
-            await Db.SaveChangesAsync(cancellationToken);
-        }
         
         // Из за того что SQlite не поддерживает кирилицу в операторе like, я порционно выгружаю книги и сохраняю те что подходят по условию
         public async Task<List<Book>> FindBookBySubstringName(string name, CancellationToken cancellationToken)

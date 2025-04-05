@@ -2,6 +2,7 @@
 using BooksApi.Application.Exceptions.BookExceptions;
 using BooksApi.Application.Exceptions.UserExceptions;
 using BooksApi.Application.Interfaces;
+using BooksApi.Application.UseCasesInterfaces.IBookUseCases;
 using BooksApi.Domain.Repositories;
 using System;
 using System.Collections.Generic;
@@ -11,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace BooksApi.Application.UseCases.BookUseCases
 {
-    public class GiveBookOnHandsUseCase
+    public class GiveBookOnHandsUseCase : IGiveBookOnHandsUseCase
     {
         private readonly IBookRepository br;
 
@@ -42,7 +43,13 @@ namespace BooksApi.Application.UseCases.BookUseCases
                 throw new BookOnHandsException();
             }
 
-            await br.GiveBookToUser(id, userId, cancellationToken);
+            book.BorrowedAt = DateTime.Now;
+            
+            book.ReturnBy = DateTime.Now.AddDays(14);
+            
+            book.UserThatGetBook = user.Id;
+
+            await br.ChangeBook(book, cancellationToken);
 
             return;
         }

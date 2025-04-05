@@ -2,6 +2,7 @@
 using BooksApi.Application.DTOs;
 using BooksApi.Application.Exceptions.BookExceptions;
 using BooksApi.Application.Interfaces;
+using BooksApi.Application.UseCasesInterfaces.IBookUseCases;
 using BooksApi.Domain.Entities;
 using BooksApi.Domain.Repositories;
 using System;
@@ -12,7 +13,7 @@ using System.Threading.Tasks;
 
 namespace BooksApi.Application.UseCases.BookUseCases
 {
-    public class AddBookUseCase
+    public class AddBookUseCase : IAddBookUseCase
     {
         private readonly IBookRepository br;
 

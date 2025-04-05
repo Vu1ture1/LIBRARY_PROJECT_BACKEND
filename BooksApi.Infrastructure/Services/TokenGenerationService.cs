@@ -14,7 +14,7 @@ using System.Threading;
 using BooksApi.Application.Responses;
 using BooksApi.Application.Interfaces;
 
-namespace BooksApi.Application.Services
+namespace BooksApi.Infrastructure.Services
 {
     public class TokenGenerationService : ITokenGenerationService
     {
@@ -55,13 +55,6 @@ namespace BooksApi.Application.Services
             refreshToken.ExpiredDate = DateTime.UtcNow.AddDays(7);
 
             refreshToken.Token = GenerateRefreshToken();
-
-            var oldTokens = await rtr.GetAllUserRefreshTokens(user.Id, cancellationToken);
-
-            if (oldTokens != null)
-                await rtr.DeleteUserRefreshTokens(oldTokens, cancellationToken);
-            
-            await rtr.AddRefreshToken(refreshToken, cancellationToken);
 
             return new Response(accessToken, refreshToken);
         }

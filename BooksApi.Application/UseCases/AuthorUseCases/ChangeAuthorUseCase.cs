@@ -2,6 +2,7 @@
 using BooksApi.Application.DTOs;
 using BooksApi.Application.Exceptions.AuthorExceptions;
 using BooksApi.Application.Interfaces;
+using BooksApi.Application.UseCasesInterfaces.IAuthorUseCases;
 using BooksApi.Domain.Repositories;
 using System;
 using System.Collections.Generic;
@@ -11,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace BooksApi.Application.UseCases.AuthorUseCases
 {
-    public class ChangeAuthorUseCase
+    public class ChangeAuthorUseCase : IChangeAuthorUseCase
     {
         private readonly IAuthorRepository ar;
 

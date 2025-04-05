@@ -17,6 +17,9 @@ using BooksApi.Application.Interfaces;
 using BooksApi.Application.UseCases.UserUseCases;
 using BooksApi.Application.UseCases.BookUseCases;
 using BooksApi.Application.UseCases.AuthorUseCases;
+using BooksApi.Application.UseCasesInterfaces.IUserUseCases;
+using BooksApi.Application.UseCasesInterfaces.IBookUseCases;
+using BooksApi.Application.UseCasesInterfaces.IAuthorUseCases;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -67,26 +70,26 @@ builder.Services.AddTransient<IEncryptService, EncryptService>();
 
 builder.Services.AddTransient<IFileService, FileService>();
 
-builder.Services.AddScoped<LoginUserUseCase>();
-builder.Services.AddScoped<RegisterUserUseCase>();
-builder.Services.AddScoped<RefreshUserTokensUseCase>();
+builder.Services.AddScoped<ILoginUserUseCase, LoginUserUseCase >();
+builder.Services.AddScoped<IRegisterUserUseCase, RegisterUserUseCase>();
+builder.Services.AddScoped<IRefreshUserTokensUseCase, RefreshUserTokensUseCase>();
 
-builder.Services.AddScoped<AddBookUseCase>();
-builder.Services.AddScoped<ChangeBookUseCase>();
-builder.Services.AddScoped<DeleteBookUseCase>();
-builder.Services.AddScoped<FindBooksByAuthorUseCase>();
-builder.Services.AddScoped<FindBooksByNameUseCase>();
-builder.Services.AddScoped<GetAllBooksOnHandsUseCase>();
-builder.Services.AddScoped<GetBookByIdUseCase>();
-builder.Services.AddScoped<GetBookByIsbnUseCase>();
-builder.Services.AddScoped<GetBooksPaginatedListUseCase>();
-builder.Services.AddScoped<GiveBookOnHandsUseCase>();
+builder.Services.AddScoped<IAddBookUseCase, AddBookUseCase>();
+builder.Services.AddScoped<IChangeBookUseCase, ChangeBookUseCase>();
+builder.Services.AddScoped<IDeleteBookUseCase, DeleteBookUseCase>();
+builder.Services.AddScoped<IFindBooksByAuthorUseCase, FindBooksByAuthorUseCase>();
+builder.Services.AddScoped<IFindBooksByNameUseCase, FindBooksByNameUseCase>();
+builder.Services.AddScoped<IGetAllBooksOnHandsUseCase, GetAllBooksOnHandsUseCase>();
+builder.Services.AddScoped<IGetBookByIdUseCase, GetBookByIdUseCase>();
+builder.Services.AddScoped<IGetBookByIsbnUseCase, GetBookByIsbnUseCase>();
+builder.Services.AddScoped<IGetBooksPaginatedListUseCase, GetBooksPaginatedListUseCase>();
+builder.Services.AddScoped<IGiveBookOnHandsUseCase, GiveBookOnHandsUseCase>();
 
-builder.Services.AddScoped<AddAuthorUseCase>();
-builder.Services.AddScoped<ChangeAuthorUseCase>();
-builder.Services.AddScoped<DeleteAuthorUseCase>();
-builder.Services.AddScoped<GetAllAuthorsUseCase>();
-builder.Services.AddScoped<GetOneAuthorByIdUseCase>();
+builder.Services.AddScoped<IAddAuthorUseCase, AddAuthorUseCase>();
+builder.Services.AddScoped<IChangeAuthorUseCase, ChangeAuthorUseCase>();
+builder.Services.AddScoped<IDeleteAuthorUseCase, DeleteAuthorUseCase>();
+builder.Services.AddScoped<IGetAllAuthorsUseCase, GetAllAuthorsUseCase>();
+builder.Services.AddScoped<IGetOneAuthorByIdUseCase, GetOneAuthorByIdUseCase>();
 
 builder.Services.AddDbContext<AppDbContext>(options =>
 {

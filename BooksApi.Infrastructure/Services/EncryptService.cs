@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace BooksApi.Application.Services
+namespace BooksApi.Infrastructure.Services
 {
     public class EncryptService : IEncryptService
     {
