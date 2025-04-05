@@ -26,7 +26,7 @@ namespace BooksApi.Application.UseCases.BookUseCases
         {
             var book = await br.GetBookById(id, cancellationToken);
 
-            var user = await ur.GetUserById(id, cancellationToken);
+            var user = await ur.GetUserById(userId, cancellationToken);
 
             if (user == null)
             {
